@@ -591,61 +591,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Schneeflocken-System</title>
+  <title>Interaktives Schneeflocken-System</title>
   <style>
+    /* Globale Einstellungen */
     body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      background: linear-gradient(to bottom, #0d47a1, #1976d2);
-      color: white;
+      background: linear-gradient(to bottom, #001f3f, #0074D9);
       font-family: Arial, sans-serif;
-      height: 100vh;
-    }
-
-    .snowflake {
-      position: fixed;
-      top: -10px;
-      font-size: 1rem;
       color: white;
-      animation: fall linear infinite;
+      overflow-x: hidden;
     }
 
-    @keyframes fall {
-      0% {
-        transform: translateY(0) rotate(0deg);
-      }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-      }
+    /* Canvas für Schneeflocken */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Inhalte der Seite */
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .content h1 {
+      font-size: 4rem;
+      margin: 50px 0;
+    }
+
+    .content p {
+      font-size: 1.5rem;
+      line-height: 1.8;
+      margin: 20px 0;
+    }
+
+    /* Beispiel für Abschnitte */
+    .section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section:nth-child(odd) {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .section:nth-child(even) {
+      background: rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
 <body>
+  <canvas id="snowCanvas"></canvas>
+  
+  <div class="content">
+    <div class="section">
+      <h1>Willkommen im Winter</h1>
+    </div>
+    <div class="section">
+      <p>Scrolle durch die Seite und beobachte die Schneeflocken im Hintergrund.</p>
+    </div>
+    <div class="section">
+      <p>Die Schneeflocken bewegen sich frei und passen sich der Mausbewegung an.</p>
+    </div>
+    <div class="section">
+      <h1>Genieße die Winteratmosphäre!</h1>
+    </div>
+  </div>
+  
   <script>
-    const snowflakeEmojis = ['❄️', '☃️', '✻', '❅', '❆']; // Verschiedene Schneeflocken-Symbole
-    const snowflakeCount = 100; // Anzahl der Schneeflocken
+    const canvas = document.getElementById('snowCanvas');
+    const ctx = canvas.getContext('2d');
+    let snowflakes = [];
 
-    function createSnowflake() {
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake';
-      snowflake.textContent = snowflakeEmojis[Math.floor(Math.random() * snowflakeEmojis.length)];
-      snowflake.style.left = Math.random() * 100 + 'vw';
-      snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
-      snowflake.style.fontSize = Math.random() * 20 + 10 + 'px';
+    // Canvas-Größe an Fenster anpassen
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-      document.body.appendChild(snowflake);
+    // Schneeflocken-Klasse
+    class Snowflake {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = Math.random() * 4 + 1;
+        this.speedY = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.opacity = Math.random();
+      }
 
-      // Entfernen der Schneeflocke nach Ende der Animation
-      snowflake.addEventListener('animationend', () => {
-        snowflake.remove();
-      });
+      update(mouseX, mouseY) {
+        this.y += this.speedY;
+        this.x += this.speedX;
+
+        // Maus-Interaktion
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 100) {
+          this.x += dx / distance * 2;
+          this.y += dy / distance * 2;
+        }
+
+        // Schneeflocke zurücksetzen, wenn sie den Bildschirm verlässt
+        if (this.y > canvas.height) {
+          this.y = -this.radius;
+          this.x = Math.random() * canvas.width;
+        }
+        if (this.x > canvas.width || this.x < 0) {
+          this.x = Math.random() * canvas.width;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.fill();
+      }
     }
 
-    // Wiederholtes Erstellen von Schneeflocken
-    setInterval(createSnowflake, 100);
+    // Schneeflocken initialisieren
+    function initSnowflakes() {
+      snowflakes = [];
+      for (let i = 0; i < 150; i++) {
+        snowflakes.push(new Snowflake());
+      }
+    }
+    initSnowflakes();
+
+    // Mausposition verfolgen
+    let mouseX = -100, mouseY = -100;
+    canvas.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Animation starten
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      snowflakes.forEach((snowflake) => {
+        snowflake.update(mouseX, mouseY);
+        snowflake.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
   </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
