@@ -132,7 +132,7 @@
         <p>Unsere Mission ist es, den Spielern eine immersive und unterhaltsame Roleplay-Erfahrung zu bieten. Wir setzen auf Fairness, Respekt und spannende Interaktionen. Bei uns steht der Spaß und das gemeinsame Erleben im Vordergrund.</p>
     </div>
 
-    <div id="join" class="section-title">Beitreten</div>
+    <div id="join" class="section-title">Discord-Server</div>
     <div class="info-box">
         <h2>Wie kannst du beitreten?</h2>
         <p>Um Teil unserer Community zu werden, melde dich einfach an und starte dein Abenteuer in NRW Rolepaly. Besuche unseren Discord-Server für mehr Informationen und die Anmeldung.</p>
@@ -586,5 +586,66 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schneeflocken-System</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0d47a1, #1976d2);
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      font-size: 1rem;
+      color: white;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const snowflakeEmojis = ['❄️', '☃️', '✻', '❅', '❆']; // Verschiedene Schneeflocken-Symbole
+    const snowflakeCount = 100; // Anzahl der Schneeflocken
+
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.textContent = snowflakeEmojis[Math.floor(Math.random() * snowflakeEmojis.length)];
+      snowflake.style.left = Math.random() * 100 + 'vw';
+      snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+      snowflake.style.fontSize = Math.random() * 20 + 10 + 'px';
+
+      document.body.appendChild(snowflake);
+
+      // Entfernen der Schneeflocke nach Ende der Animation
+      snowflake.addEventListener('animationend', () => {
+        snowflake.remove();
+      });
+    }
+
+    // Wiederholtes Erstellen von Schneeflocken
+    setInterval(createSnowflake, 100);
+  </script>
+</body>
+</html>
 
 
